@@ -33,7 +33,7 @@
       </p>
 
       <button
-        class="start-button px-8 py-3 rounded-full bg-transparent border border-gray-600 text-white hover:bg-white hover:text-black transition-all duration-300 mb-12 animate-fade-in"
+        class="start-button px-8 py-3 rounded-full bg-transparent border border-gray-600 text-white hover:bg-white hover:text-black transition-all duration-300 mb-12 animate-fade-in text-xl"
         style="animation-delay: 0.7s"
         @click="goToPage"
       >
@@ -109,7 +109,7 @@ onMounted(() => {
 }
 
 .gradient-bar {
-  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+  background: linear-gradient(90deg, #27e7e0, #091111, #16c0e7);
   border-radius: 8px;
   overflow: hidden;
   position: relative;
@@ -198,6 +198,8 @@ onMounted(() => {
   animation: typing 3.5s steps(40, end) infinite,
     blink-caret 0.75s step-end infinite;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: Consolas, monospace;
+  color: #00ff00;
 }
 
 @keyframes typing {
