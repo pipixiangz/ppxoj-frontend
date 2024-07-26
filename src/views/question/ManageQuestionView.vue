@@ -46,6 +46,17 @@
       <template #createTime="{ record }">
         {{ formatDate(record.createTime) }}
       </template>
+      <template #tags="{ record }">
+        <a-space wrap>
+          <a-tag
+            v-for="(tag, index) in parseTags(record.tags)"
+            :key="index"
+            :color="getTagColor(tag)"
+          >
+            {{ tag }}
+          </a-tag>
+        </a-space>
+      </template>
     </a-table>
   </div>
 </template>
@@ -108,6 +119,28 @@ const parseJudgeCase = (judgeCase: string) => {
   }
 };
 
+const parseTags = (tags: string) => {
+  try {
+    return JSON.parse(tags);
+  } catch (error) {
+    console.error("解析 tags 失败:", error);
+    return [];
+  }
+};
+
+const getTagColor = (tag: string) => {
+  switch (tag.toLowerCase()) {
+    case "easy":
+      return "green";
+    case "medium":
+      return "orange";
+    case "hard":
+      return "red";
+    default:
+      return "";
+  }
+};
+
 const formatDate = (dateString: string) => {
   if (!dateString) return "N/A";
   const date = new Date(dateString);
@@ -130,18 +163,11 @@ const columns = [
   {
     title: "标签",
     dataIndex: "tags",
+    slotName: "tags",
   },
   {
     title: "答案",
     dataIndex: "answer",
-  },
-  {
-    title: "提交数",
-    dataIndex: "submitNum",
-  },
-  {
-    title: "通过数",
-    dataIndex: "acceptedNum",
   },
   {
     title: "判题配置",

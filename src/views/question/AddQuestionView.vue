@@ -189,17 +189,14 @@ const loadData = async () => {
     if (res.code === 0 && res.data) {
       form.value = {
         ...res.data,
-        judgeCase: res.data.judgeCase
-          ? JSON.parse(res.data.judgeCase)
-          : [{ input: "", output: "" }],
-        judgeConfig: res.data.judgeConfig
-          ? JSON.parse(res.data.judgeConfig)
-          : {
-              memoryLimit: 1000,
-              stackLimit: 1000,
-              timeLimit: 1000,
-            },
-        tags: res.data.tags ? JSON.parse(res.data.tags) : [],
+        judgeCase: Array.isArray(res.data.judgeCase)
+          ? res.data.judgeCase
+          : JSON.parse(res.data.judgeCase || "[]"),
+        judgeConfig:
+          typeof res.data.judgeConfig === "object"
+            ? res.data.judgeConfig
+            : JSON.parse(res.data.judgeConfig || "{}"),
+        tags: Array.isArray(res.data.tags) ? res.data.tags : [],
       };
     } else {
       throw new Error(res.message || "加载失败");
@@ -223,9 +220,7 @@ const doSubmit = async () => {
   try {
     const submitData = {
       ...form.value,
-      judgeCase: JSON.stringify(form.value.judgeCase),
-      judgeConfig: JSON.stringify(form.value.judgeConfig),
-      tags: JSON.stringify(form.value.tags),
+      tags: Array.isArray(form.value.tags) ? form.value.tags : [],
     };
 
     const service = updatePage
