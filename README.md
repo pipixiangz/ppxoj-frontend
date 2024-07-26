@@ -18,7 +18,7 @@ Backend: The system can compile, run, and judge the correctness of the code base
 ![浏览提交题目](https://github.com/pipixiangz/ppxoj-frontend/blob/main/imgs/questionSubmitView.jpg)
 ![创建题目](https://github.com/pipixiangz/ppxoj-frontend/blob/main/imgs/createQuestionView.jpg)
 ![管理题目](https://github.com/pipixiangz/ppxoj-frontend/blob/main/imgs/manageQuestionView.jpg)
-![做题页面](https://github.com/pipixiangz/ppxoj-frontend/blob/main/imgs/doQuestion.jpg)
+![做题页面](https://github.com/pipixiangz/ppxoj-frontend/blob/main/imgs/doQuestion.png)
 ![关于](https://github.com/pipixiangz/ppxoj-frontend/blob/main/imgs/about.png)
 
 ### 前端
