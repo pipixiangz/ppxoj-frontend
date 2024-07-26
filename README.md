@@ -1,5 +1,5 @@
 # ppxoj-frontend
-## 皮皮翔OJ在线判题系统 (前端代码仓库)
+## 皮皮码来判判 (前端代码仓库)
 
 基于Spring Boot + Spring Cloud 微服务+ Docker (+ Vue 3 + Arco Design)的编程题目在线评测系统。
 
