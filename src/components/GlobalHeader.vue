@@ -31,8 +31,7 @@
         </a-menu>
       </a-col>
       <a-col flex="120px">
-        <!-- 减少宽度 -->
-        <div class="user-info">
+        <div class="user-info" @click="handleUserInfoClick">
           <a-avatar
             :size="28"
             :style="{ backgroundColor: '#87d068', marginRight: '8px' }"
@@ -49,7 +48,6 @@
 </template>
 
 <script setup lang="ts">
-// 脚本部分保持不变
 import { routes } from "../router/routes";
 import { useRoute, useRouter } from "vue-router";
 import { computed, ref } from "vue";
@@ -99,15 +97,20 @@ const avatarText = computed(() => {
 });
 
 const goToMainPage = () => {
-  router.push("/"); // 假设主页的路由是 '/'
+  router.push("/");
+};
+
+const handleUserInfoClick = () => {
+  router.push("/user/login");
 };
 </script>
 
 <style scoped>
+/* 样式保持不变 */
 .global-header {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: box-shadow 0.3s ease;
-  padding: 0 16px; /* 减少左右内边距 */
+  padding: 0 16px;
 }
 
 .global-header:hover {
@@ -121,14 +124,14 @@ const goToMainPage = () => {
 
 .title {
   color: #444;
-  margin-left: 12px; /* 减少标题左边距 */
+  margin-left: 12px;
   font-weight: bold;
   transition: color 0.3s ease;
-  font-size: 16px; /* 稍微减小字体大小 */
+  font-size: 16px;
 }
 
 .logo {
-  height: 40px; /* 减小 logo 大小 */
+  height: 40px;
   transition: transform 0.3s ease;
 }
 
@@ -143,7 +146,7 @@ const goToMainPage = () => {
 .menu-item {
   position: relative;
   overflow: hidden;
-  padding: 0 12px; /* 减少菜单项的内边距 */
+  padding: 0 12px;
 }
 
 .menu-item::after {
@@ -164,7 +167,7 @@ const goToMainPage = () => {
 
 :deep(.ant-menu-horizontal) {
   border-bottom: none;
-  line-height: 40px; /* 减小菜单高度 */
+  line-height: 40px;
 }
 
 :deep(.ant-menu-item-selected) {
@@ -192,7 +195,6 @@ const goToMainPage = () => {
   white-space: nowrap;
 }
 
-/* 添加模糊效果 */
 @supports (backdrop-filter: blur(10px)) {
   .global-header {
     background-color: rgba(255, 255, 255, 0.28);
