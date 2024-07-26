@@ -30,13 +30,13 @@ export default {
   name: "ExtendedAboutPage",
   data() {
     return {
-      tag: "皮皮翔OJ在线判题",
+      tag: "皮皮码来判判",
       title: "Write, Submit, Succeed!",
       description:
         "基于Vue 3 + Spring Boot + 微服务+ Docker的编程题目在线评测系统",
       additionalTitle: "More About My Project",
       additionalContent:
-        "An online programming problem evaluation system (abbreviated as OJ) based on Vue 3 + Spring Boot + Spring Cloud microservices + Docker.\n" +
+        "An online programming problem judge system (abbreviated as OJ) based on Vue 3 + Spring Boot + Spring Cloud microservices + Docker.\n" +
         "\n" +
         "On the system frontend, administrators can create and manage problems; users can freely search for problems, read them, write, and submit code.\n" +
         "\n" +

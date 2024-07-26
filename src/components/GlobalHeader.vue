@@ -18,7 +18,7 @@
               style="cursor: pointer"
             >
               <img class="logo" src="../assets/Robot-judge.svg" />
-              <div class="title">皮皮翔OJ在线判题</div>
+              <div class="title">皮皮码来判判</div>
             </div>
           </a-menu-item>
           <a-menu-item
