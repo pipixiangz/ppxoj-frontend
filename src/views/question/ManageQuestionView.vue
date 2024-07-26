@@ -18,6 +18,34 @@
           <a-button status="danger" @click="doDelete(record)">删除</a-button>
         </a-space>
       </template>
+      <template #judgeConfig="{ record }">
+        <div v-if="record.judgeConfig">
+          <div>
+            时间限制：{{ parseJudgeConfig(record.judgeConfig).timeLimit }} ms
+          </div>
+          <div>
+            内存限制：{{ parseJudgeConfig(record.judgeConfig).memoryLimit }} MB
+          </div>
+          <div>
+            堆栈限制：{{ parseJudgeConfig(record.judgeConfig).stackLimit }} MB
+          </div>
+        </div>
+      </template>
+      <template #judgeCase="{ record }">
+        <a-collapse v-if="record.judgeCase">
+          <a-collapse-item
+            v-for="(item, index) in parseJudgeCase(record.judgeCase)"
+            :key="index"
+            :header="`用例 ${index + 1}`"
+          >
+            <div>输入：{{ item.input }}</div>
+            <div>输出：{{ item.output }}</div>
+          </a-collapse-item>
+        </a-collapse>
+      </template>
+      <template #createTime="{ record }">
+        {{ formatDate(record.createTime) }}
+      </template>
     </a-table>
   </div>
 </template>
@@ -54,21 +82,37 @@ const loadData = async () => {
   }
 };
 
-/**
- * 监听 searchParams 变量，改变时触发页面的重新加载
- */
 watchEffect(() => {
   loadData();
 });
 
-/**
- * 页面加载时，请求数据
- */
 onMounted(() => {
   loadData();
 });
 
-// {id: "1", title: "A+ D", content: "新的题目内容", tags: "["二叉树"]", answer: "新的答案", submitNum: 0,…}
+const parseJudgeConfig = (judgeConfig: string) => {
+  try {
+    return JSON.parse(judgeConfig);
+  } catch (error) {
+    console.error("解析 judgeConfig 失败:", error);
+    return { timeLimit: "N/A", memoryLimit: "N/A", stackLimit: "N/A" };
+  }
+};
+
+const parseJudgeCase = (judgeCase: string) => {
+  try {
+    return JSON.parse(judgeCase);
+  } catch (error) {
+    console.error("解析 judgeCase 失败:", error);
+    return [];
+  }
+};
+
+const formatDate = (dateString: string) => {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  return date.toISOString().split("T")[0];
+};
 
 const columns = [
   {
@@ -102,10 +146,12 @@ const columns = [
   {
     title: "判题配置",
     dataIndex: "judgeConfig",
+    slotName: "judgeConfig",
   },
   {
     title: "判题用例",
     dataIndex: "judgeCase",
+    slotName: "judgeCase",
   },
   {
     title: "用户id",
@@ -114,6 +160,7 @@ const columns = [
   {
     title: "创建时间",
     dataIndex: "createTime",
+    slotName: "createTime",
   },
   {
     title: "操作",

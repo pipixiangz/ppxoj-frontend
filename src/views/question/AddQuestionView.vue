@@ -1,118 +1,170 @@
 <template>
-  <div id="addQuestionView">
-    <h2>创建题目</h2>
-    <a-form :model="form" label-align="left">
-      <a-form-item field="title" label="标题">
-        <a-input v-model="form.title" placeholder="请输入标题" />
-      </a-form-item>
-      <a-form-item field="tags" label="标签">
-        <a-input-tag v-model="form.tags" placeholder="请选择标签" allow-clear />
-      </a-form-item>
+  <div
+    id="addQuestionView"
+    class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md"
+  >
+    <h1 class="text-2xl font-bold mb-6 text-center">
+      {{ updatePage ? "更新题目" : "添加新题目" }}
+    </h1>
+    <a-form :model="form" layout="vertical">
+      <a-row :gutter="16">
+        <a-col :span="16">
+          <a-form-item field="title" label="标题">
+            <a-input v-model="form.title" placeholder="请输入标题" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item field="tags" label="标签">
+            <a-input-tag
+              v-model="form.tags"
+              placeholder="请选择标签"
+              allow-clear
+            />
+          </a-form-item>
+        </a-col>
+      </a-row>
+
       <a-form-item field="content" label="题目内容">
-        <MdEditor :value="form.content" :handle-change="onContentChange" />
+        <MdEditor
+          :value="form.content"
+          :handle-change="updateContent"
+          class="w-full"
+        />
       </a-form-item>
+
       <a-form-item field="answer" label="答案">
-        <MdEditor :value="form.answer" :handle-change="onAnswerChange" />
+        <MdEditor
+          :value="form.answer"
+          :handle-change="updateAnswer"
+          class="w-full"
+        />
       </a-form-item>
-      <a-form-item label="判题配置" :content-flex="false" :merge-props="false">
-        <a-space direction="vertical" style="min-width: 480px">
-          <a-form-item field="judgeConfig.timeLimit" label="时间限制">
+
+      <a-divider>判题配置</a-divider>
+
+      <a-row :gutter="16">
+        <a-col :span="8">
+          <a-form-item field="judgeConfig.timeLimit" label="时间限制 (ms)">
             <a-input-number
               v-model="form.judgeConfig.timeLimit"
               placeholder="请输入时间限制"
               mode="button"
-              min="0"
+              :min="0"
+              :step="100"
               size="large"
+              style="width: 100%"
             />
           </a-form-item>
-          <a-form-item field="judgeConfig.memoryLimit" label="内存限制">
+        </a-col>
+        <a-col :span="8">
+          <a-form-item field="judgeConfig.memoryLimit" label="内存限制 (MB)">
             <a-input-number
               v-model="form.judgeConfig.memoryLimit"
               placeholder="请输入内存限制"
               mode="button"
-              min="0"
+              :min="0"
+              :step="64"
               size="large"
+              style="width: 100%"
             />
           </a-form-item>
-          <a-form-item field="judgeConfig.stackLimit" label="堆栈限制">
+        </a-col>
+        <a-col :span="8">
+          <a-form-item field="judgeConfig.stackLimit" label="堆栈限制 (MB)">
             <a-input-number
               v-model="form.judgeConfig.stackLimit"
               placeholder="请输入堆栈限制"
               mode="button"
-              min="0"
+              :min="0"
+              :step="64"
               size="large"
+              style="width: 100%"
             />
           </a-form-item>
-        </a-space>
-      </a-form-item>
-      <a-form-item
-        label="测试用例配置"
-        :content-flex="false"
-        :merge-props="false"
+        </a-col>
+      </a-row>
+
+      <a-divider>测试用例配置</a-divider>
+
+      <div
+        v-for="(judgeCaseItem, index) of form.judgeCase"
+        :key="index"
+        class="mb-4 p-4 border rounded-md"
       >
-        <a-form-item
-          v-for="(judgeCaseItem, index) of form.judgeCase"
-          :key="index"
-          no-style
-        >
-          <a-space direction="vertical" style="min-width: 640px">
+        <a-row :gutter="16">
+          <a-col :span="11">
             <a-form-item
               :field="`form.judgeCase[${index}].input`"
-              :label="`输入用例-${index}`"
-              :key="index"
+              label="输入用例"
             >
               <a-input
                 v-model="judgeCaseItem.input"
                 placeholder="请输入测试输入用例"
+                type="textarea"
+                :auto-size="{ minRows: 2, maxRows: 5 }"
               />
             </a-form-item>
+          </a-col>
+          <a-col :span="11">
             <a-form-item
               :field="`form.judgeCase[${index}].output`"
-              :label="`输出用例-${index}`"
-              :key="index"
+              label="输出用例"
             >
               <a-input
                 v-model="judgeCaseItem.output"
                 placeholder="请输入测试输出用例"
+                type="textarea"
+                :auto-size="{ minRows: 2, maxRows: 5 }"
               />
             </a-form-item>
-            <a-button status="danger" @click="handleDelete(index)">
-              删除
+          </a-col>
+          <a-col :span="2" class="flex items-center justify-center">
+            <a-button
+              status="danger"
+              shape="circle"
+              @click="handleDelete(index)"
+            >
+              <icon-delete />
             </a-button>
-          </a-space>
-        </a-form-item>
-        <div style="margin-top: 32px">
-          <a-button @click="handleAdd" type="outline" status="success"
-            >新增测试用例
-          </a-button>
-        </div>
-      </a-form-item>
-      <div style="margin-top: 16px" />
-      <a-form-item>
-        <a-button type="primary" style="min-width: 200px" @click="doSubmit"
-          >提交
+          </a-col>
+        </a-row>
+      </div>
+
+      <div class="text-center mt-4">
+        <a-button @click="handleAdd" type="outline" status="success">
+          <template #icon>
+            <icon-plus />
+          </template>
+          新增测试用例
         </a-button>
-      </a-form-item>
+      </div>
+
+      <div class="mt-8 text-center">
+        <a-button type="primary" size="large" @click="doSubmit">
+          {{ updatePage ? "更新题目" : "提交新题目" }}
+        </a-button>
+      </div>
     </a-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref, onMounted } from "vue";
+import { Message } from "@arco-design/web-vue";
+import { useRoute, useRouter } from "vue-router";
+import { IconDelete, IconPlus } from "@arco-design/web-vue/es/icon";
 import MdEditor from "@/components/MdEditor.vue";
 import { QuestionControllerService } from "../../../generated";
-import message from "@arco-design/web-vue/es/message";
-import { useRoute } from "vue-router";
 
 const route = useRoute();
-// 如果页面地址包含 update，视为更新页面
+const router = useRouter();
 const updatePage = route.path.includes("update");
 
-let form = ref({
+const form = ref({
   title: "",
   tags: [],
-  answer: "",
   content: "",
+  answer: "",
   judgeConfig: {
     memoryLimit: 1000,
     stackLimit: 1000,
@@ -126,105 +178,84 @@ let form = ref({
   ],
 });
 
-/**
- * 根据题目 id 获取老的数据
- */
 const loadData = async () => {
   const id = route.query.id;
-  if (!id) {
-    return;
-  }
-  const res = await QuestionControllerService.getQuestionByIdUsingGet(
-    id as any
-  );
-  if (res.code === 0) {
-    form.value = res.data as any;
-    // json 转 js 对象
-    console.log("form.value.judgeCase", form.value.judgeCase);
-    if (!form.value.judgeCase) {
-      form.value.judgeCase = [
-        {
-          input: "",
-          output: "",
-        },
-      ];
-    } else {
-      form.value.judgeCase = JSON.parse(form.value.judgeCase as any);
-    }
-    if (!form.value.judgeConfig) {
-      form.value.judgeConfig = {
-        memoryLimit: 1000,
-        stackLimit: 1000,
-        timeLimit: 1000,
+  if (!id) return;
+
+  try {
+    const res = await QuestionControllerService.getQuestionByIdUsingGet(
+      id as string
+    );
+    if (res.code === 0 && res.data) {
+      form.value = {
+        ...res.data,
+        judgeCase: res.data.judgeCase
+          ? JSON.parse(res.data.judgeCase)
+          : [{ input: "", output: "" }],
+        judgeConfig: res.data.judgeConfig
+          ? JSON.parse(res.data.judgeConfig)
+          : {
+              memoryLimit: 1000,
+              stackLimit: 1000,
+              timeLimit: 1000,
+            },
+        tags: res.data.tags ? JSON.parse(res.data.tags) : [],
       };
     } else {
-      form.value.judgeConfig = JSON.parse(form.value.judgeConfig as any);
+      throw new Error(res.message || "加载失败");
     }
-    if (!form.value.tags) {
-      form.value.tags = [];
-    } else {
-      form.value.tags = JSON.parse(form.value.tags as any);
-    }
-  } else {
-    message.error("加载失败，" + res.message);
+  } catch (error) {
+    Message.error(`加载失败: ${error.message}`);
   }
 };
 
-onMounted(() => {
-  loadData();
-});
+onMounted(loadData);
 
-const doSubmit = async () => {
-  console.log("form.value", form.value);
-  // 区分更新还是创建
-  if (updatePage) {
-    const res = await QuestionControllerService.updateQuestionUsingPost(
-      form.value
-    );
-    if (res.code === 0) {
-      message.success("更新成功");
-    } else {
-      message.error("更新失败，" + res.message);
-    }
-  } else {
-    const res = await QuestionControllerService.addQuestionUsingPost(
-      form.value
-    );
-    if (res.code === 0) {
-      message.success("创建成功");
-    } else {
-      message.error("创建失败，" + res.message);
-    }
-  }
-};
-
-/**
- * 新增判题用例
- */
-const handleAdd = () => {
-  form.value.judgeCase.push({
-    input: "",
-    output: "",
-  });
-};
-
-/**
- * 删除判题用例
- */
-const handleDelete = (index: number) => {
-  form.value.judgeCase.splice(index, 1);
-};
-
-const onContentChange = (value: string) => {
+const updateContent = (value: string) => {
   form.value.content = value;
 };
 
-const onAnswerChange = (value: string) => {
+const updateAnswer = (value: string) => {
   form.value.answer = value;
+};
+
+const doSubmit = async () => {
+  try {
+    const submitData = {
+      ...form.value,
+      judgeCase: JSON.stringify(form.value.judgeCase),
+      judgeConfig: JSON.stringify(form.value.judgeConfig),
+      tags: JSON.stringify(form.value.tags),
+    };
+
+    const service = updatePage
+      ? QuestionControllerService.updateQuestionUsingPost
+      : QuestionControllerService.addQuestionUsingPost;
+
+    const res = await service(submitData);
+
+    if (res.code === 0) {
+      Message.success(updatePage ? "更新成功" : "创建成功");
+      router.push("/question/manage");
+    } else {
+      throw new Error(res.message || (updatePage ? "更新失败" : "创建失败"));
+    }
+  } catch (error) {
+    Message.error(`操作失败: ${error.message}`);
+  }
+};
+
+const handleAdd = () => {
+  form.value.judgeCase.push({ input: "", output: "" });
+};
+
+const handleDelete = (index: number) => {
+  form.value.judgeCase.splice(index, 1);
 };
 </script>
 
 <style scoped>
 #addQuestionView {
+  @apply bg-gray-50 min-h-screen py-8;
 }
 </style>

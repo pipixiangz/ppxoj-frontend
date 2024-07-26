@@ -34,7 +34,17 @@
       @page-change="onPageChange"
     >
       <template #judgeInfo="{ record }">
-        {{ JSON.stringify(record.judgeInfo) }}
+        <a-space direction="vertical">
+          <a-tag :color="getStatusColor(record.judgeInfo.message)">
+            {{ getStatusMessage(record.judgeInfo.message) }}
+          </a-tag>
+          <span v-if="record.judgeInfo.message !== null"
+            >内存: {{ record.judgeInfo.memory }} MB</span
+          >
+          <span v-if="record.judgeInfo.message !== null"
+            >耗时: {{ record.judgeInfo.time }} ms</span
+          >
+        </a-space>
       </template>
       <template #createTime="{ record }">
         {{ moment(record.createTime).format("YYYY-MM-DD") }}
@@ -81,19 +91,31 @@ const loadData = async () => {
   }
 };
 
-/**
- * 监听 searchParams 变量，改变时触发页面的重新加载
- */
 watchEffect(() => {
   loadData();
 });
 
-/**
- * 页面加载时，请求数据
- */
 onMounted(() => {
   loadData();
 });
+
+const getStatusColor = (status: string | null) => {
+  if (status === null) return "red";
+  switch (status) {
+    case "Accepted":
+      return "green";
+    case "Wrong Answer":
+      return "red";
+    case "Time Limit Exceeded":
+      return "orange";
+    default:
+      return "blue";
+  }
+};
+
+const getStatusMessage = (status: string | null) => {
+  return status === null ? "Compile Error" : status;
+};
 
 const columns = [
   {
@@ -135,21 +157,13 @@ const onPageChange = (page: number) => {
 
 const router = useRouter();
 
-/**
- * 跳转到做题页面
- * @param question
- */
 const toQuestionPage = (question: Question) => {
   router.push({
     path: `/view/question/${question.id}`,
   });
 };
 
-/**
- * 确认搜索，重新加载数据
- */
 const doSubmit = () => {
-  // 这里需要重置搜索页号
   searchParams.value = {
     ...searchParams.value,
     current: 1,

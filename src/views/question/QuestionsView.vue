@@ -8,10 +8,15 @@
         <a-input-tag v-model="searchParams.tags" placeholder="请输入标签" />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" @click="doSubmit">提交</a-button>
+        <a-button type="primary" @click="doSubmit">
+          <template #icon>
+            <icon-search />
+          </template>
+          搜索
+        </a-button>
       </a-form-item>
     </a-form>
-    <a-divider size="0" />
+    <a-divider style="margin: 0 0 16px 0" />
     <a-table
       :ref="tableRef"
       :columns="columns"
@@ -26,8 +31,12 @@
     >
       <template #tags="{ record }">
         <a-space wrap>
-          <a-tag v-for="(tag, index) of record.tags" :key="index" color="green"
-            >{{ tag }}
+          <a-tag
+            v-for="(tag, index) of record.tags"
+            :key="index"
+            :color="getTagColor(tag)"
+          >
+            {{ tag }}
           </a-tag>
         </a-space>
       </template>
@@ -64,6 +73,7 @@ import message from "@arco-design/web-vue/es/message";
 import * as querystring from "querystring";
 import { useRouter } from "vue-router";
 import moment from "moment";
+import { IconSearch } from "@arco-design/web-vue/es/icon";
 
 const tableRef = ref();
 
@@ -101,8 +111,6 @@ watchEffect(() => {
 onMounted(() => {
   loadData();
 });
-
-// {id: "1", title: "A+ D", content: "新的题目内容", tags: "["二叉树"]", answer: "新的答案", submitNum: 0,…}
 
 const columns = [
   {
@@ -158,6 +166,24 @@ const doSubmit = () => {
     ...searchParams.value,
     current: 1,
   };
+};
+
+/**
+ * 根据标签内容返回对应的颜色
+ * @param tag 标签内容
+ * @returns 颜色字符串
+ */
+const getTagColor = (tag: string) => {
+  switch (tag.toLowerCase()) {
+    case "easy":
+      return "green";
+    case "medium":
+      return "orange";
+    case "hard":
+      return "red";
+    default:
+      return "gray";
+  }
 };
 </script>
 
